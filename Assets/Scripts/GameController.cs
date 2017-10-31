@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour {
 
 	public static GameController control;
 
-	public int visited_count;
+	public int visited_count = 0;
 	public int hotspots_count;
 	public HotspotsList hotspots_data;
 
@@ -72,6 +72,7 @@ public class GameController : MonoBehaviour {
 		foreach (Hotspot hotspot in hotspots_data.hotspots) {
 			if (hotspot_id == hotspot.id) {
 				hotspot.visited = true;
+				visited_count++;
 				break;
 			}
 		}
