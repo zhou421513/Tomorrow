@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour {
 
 	public int visited_count = 0;
 	public int hotspots_count;
-	public HotspotsList hotspots_data;
+	public HotspotsList hotspots_list;
 
 	private string jsonString;
 	private Hotspot visited_hotspot;
@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour {
 	void Start () {
 		Load();
 		// VisitHotspot(123);
-		// Debug.Log(hotspots_data.hotspots[1].visited);
+		// Debug.Log(hotspots_list.hotspots[1].visited);
 	}
 
 	void Awake () {
@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour {
 		if (File.Exists(Application.persistentDataPath + "/playerInfo.dat")) {
 			BinaryFormatter bf = new BinaryFormatter();
 			FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-			hotspots_data = (HotspotsList)bf.Deserialize(file);
+			hotspots_list = (HotspotsList)bf.Deserialize(file);
 			file.Close();
 		}
 		else { // When the app starts for the first time
@@ -51,26 +51,26 @@ public class GameController : MonoBehaviour {
 	// loads, parses and saves the json into `playerInfo.dat` file
 	void FirstLoad () {
 		jsonString = File.ReadAllText(Application.dataPath + "/Resources/hotspots_list.json");
-		hotspots_data = JsonUtility.FromJson<HotspotsList>(jsonString);
-		hotspots_count = hotspots_data.hotspots.Length;
+		hotspots_list = JsonUtility.FromJson<HotspotsList>(jsonString);
+		hotspots_count = hotspots_list.hotspots.Length;
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
-		bf.Serialize(file, hotspots_data);
+		bf.Serialize(file, hotspots_list);
 		file.Close();
 	}
 
-	// Saves the current `hotspots_data` into the file
+	// Saves the current `hotspots_list` into the file
 	void Save () {
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-		bf.Serialize(file, hotspots_data);
+		bf.Serialize(file, hotspots_list);
 		file.Close();
 	}
 
 	// Called when a hotspot needs to be marked as visited
 	// changes the `visited` value to true
 	void VisitHotspot (int hotspot_id) {
-		foreach (Hotspot hotspot in hotspots_data.hotspots) {
+		foreach (Hotspot hotspot in hotspots_list.hotspots) {
 			if (hotspot_id == hotspot.id) {
 				hotspot.visited = true;
 				visited_count++;
