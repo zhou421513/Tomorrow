@@ -52,6 +52,7 @@ public class GameController : MonoBehaviour {
 	void FirstLoad () {
 		jsonString = File.ReadAllText(Application.dataPath + "/Resources/hotspots_list.json");
 		hotspots_data = JsonUtility.FromJson<HotspotsList>(jsonString);
+		hotspots_count = hotspots_data.hotspots.Length;
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
 		bf.Serialize(file, hotspots_data);
