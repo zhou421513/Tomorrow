@@ -1,5 +1,5 @@
 [System.Serializable]
-public class HotspotsList
+public class PlayerData
 {
     public Hotspot[] hotspots;
 }

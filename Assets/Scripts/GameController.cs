@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
 
-	public static GameController control;
+	public static GameController instance;
 
 	public int visited_count = 0;
 	public int hotspots_count;
-	public HotspotsList hotspots_list;
+	public PlayerData player_data;
 
 	private string jsonString;
 	private Hotspot visited_hotspot;
@@ -18,16 +18,18 @@ public class GameController : MonoBehaviour {
 	// Calls Load() function
 	void Start () {
 		Load();
-		// VisitHotspot(123);
-		// Debug.Log(hotspots_list.hotspots[1].visited);
+		Debug.Log(player_data.hotspots[1].visited);
+		VisitHotspot visit = new VisitHotspot();
+		visit.call(123);
+		Debug.Log(player_data.hotspots[1].visited);
 	}
 
 	void Awake () {
-		if (control == null) {
+		if (instance == null) {
 			DontDestroyOnLoad(gameObject);
-			control = this;
+			instance = this;
 		}
-		else if (control != this) {
+		else if (instance != this) {
 			Destroy(gameObject);
 		}
 	}
@@ -36,10 +38,10 @@ public class GameController : MonoBehaviour {
 	// otherwise, it loads the saved data from `playerInfo.dat` file
 	void Load () {
 		// When Game has been opened before
-		if (File.Exists(Application.persistentDataPath + "/playerInfo.dat")) {
+		if (File.Exists(Application.persistentDataPath + "/playerData.dat")) {
 			BinaryFormatter bf = new BinaryFormatter();
-			FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-			hotspots_list = (HotspotsList)bf.Deserialize(file);
+			FileStream file = File.Open(Application.persistentDataPath + "/playerData.dat", FileMode.Open);
+			player_data = (PlayerData)bf.Deserialize(file);
 			file.Close();
 		}
 		else { // When the app starts for the first time
@@ -51,32 +53,19 @@ public class GameController : MonoBehaviour {
 	// loads, parses and saves the json into `playerInfo.dat` file
 	void FirstLoad () {
 		jsonString = File.ReadAllText(Application.dataPath + "/Resources/hotspots_list.json");
-		hotspots_list = JsonUtility.FromJson<HotspotsList>(jsonString);
-		hotspots_count = hotspots_list.hotspots.Length;
+		player_data = JsonUtility.FromJson<PlayerData>(jsonString);
+		hotspots_count = player_data.hotspots.Length;
 		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
-		bf.Serialize(file, hotspots_list);
+		FileStream file = File.Create(Application.persistentDataPath + "/playerData.dat");
+		bf.Serialize(file, player_data);
 		file.Close();
 	}
 
-	// Saves the current `hotspots_list` into the file
-	void Save () {
+	// Saves the current `player_data` into the file
+	public void Save () {
 		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-		bf.Serialize(file, hotspots_list);
+		FileStream file = File.Open(Application.persistentDataPath + "/playerData.dat", FileMode.Open);
+		bf.Serialize(file, player_data);
 		file.Close();
-	}
-
-	// Called when a hotspot needs to be marked as visited
-	// changes the `visited` value to true
-	void VisitHotspot (int hotspot_id) {
-		foreach (Hotspot hotspot in hotspots_list.hotspots) {
-			if (hotspot_id == hotspot.id) {
-				hotspot.visited = true;
-				visited_count++;
-				break;
-			}
-		}
-		Save();
 	}
 }

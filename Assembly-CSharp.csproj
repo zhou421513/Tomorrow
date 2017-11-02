@@ -60,8 +60,9 @@
      <Compile Include="Assets\GoogleGoMap\Scripts\Singleton.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\Hotspot.cs" />
-     <Compile Include="Assets\Scripts\HotspotsList.cs" />
      <Compile Include="Assets\Scripts\MapCameraController.cs" />
+     <Compile Include="Assets\Scripts\PlayerData.cs" />
+     <Compile Include="Assets\Scripts\VisitHotspot.cs" />
      <None Include="Assets\GoogleGoMap\README.txt" />
      <None Include="Assets\GoogleGoMap\Instructions.txt" />
      <None Include="Assets\GoogleGoMap\The MIT License.txt" />
