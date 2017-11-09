@@ -8,15 +8,6 @@ namespace Maps
     public class MapGenerator : MonoBehaviour
     {
         public TextAsset file;
-        [Range(1, 10)]
-        public float buildingHeightMultiplier = 1;
-
-        public Color building;
-        public Color campusBuilding;
-        public Color greenery;
-        public Color water;
-        public Color ground;
-        public Color road;
 
         private static List<string> greenValues = new List<string>
         {
@@ -71,40 +62,46 @@ namespace Maps
             new string[]{"lanes","2"},new string[]{"width","1"}
         };
 
-        Material buildingMaterial;
-        Material campusBuildingMaterial;
-        Material greeneryMaterial;
-        Material waterMaterial;
-        Material groundMaterial;
-        Material roadMaterial;
-
         public void GenerateMap()
         {
-            Map map = MapReader.GetMap(file);
+            XmlDocument mapData = new XmlDocument();
+            mapData.LoadXml(file.text);
 
-            GameObject mapHolder = new GameObject();
-            mapHolder.name = "Map";
-            Transform buildings = new GameObject().transform;
-            buildings.parent = mapHolder.transform;
-            buildings.gameObject.name = "Buildings";
-            Transform areas = new GameObject().transform;
-            areas.parent = mapHolder.transform;
-            areas.gameObject.name = "Areas";
-            Transform ways = new GameObject().transform;
-            ways.parent = mapHolder.transform;
-            ways.gameObject.name = "Ways";
+            Bounds bounds = new Bounds(mapData.SelectSingleNode("/osm/bounds"));
+            List<Way> boundaries = new List<Way>();
+            List<Way> ways = new List<Way>();
 
-            primeMaterials();
-            GenerateBoundaries(map, buildings, areas);
-            GenerateLines(map, ways);
-            Bounds bounds = map.Bounds;
-            mapHolder.AddComponent<MapFunctionality>().SetMapFunctionality(bounds.MinLat, bounds.MaxLat, bounds.MinLon, bounds.MaxLon, bounds.Center);
-            mapHolder.AddComponent<TestScript>();
+            Dictionary<ulong, Node> nodesDictionary = GetNodes(mapData.SelectNodes("/osm/node"));
+
+            XmlNodeList xmlWays = mapData.SelectNodes("/osm/way");
+            foreach (XmlNode xmlWay in xmlWays)
+            {
+                List<Node> nodes = GetWayNodes(xmlWay, nodesDictionary);
+
+                if (nodes[0] == nodes[nodes.Count - 1])
+                {
+                    boundaries.Add(new Way(xmlWay, nodes));
+                }
+                else
+                {
+                    ways.Add(new Way(xmlWay, nodes));
+                }
+            }
+
+            List<Way> buildings = new List<Way>();
+            List<Way> areas = new List<Way>();
+            List<Way> lines = new List<Way>();
+            
+
+            GenerateBoundaries(boundaries, buildings, areas);
+            GenerateLines(ways, lines);
+            GameObject map = new GameObject("Map");
+            map.AddComponent<MapFunctionality>().SetMapFunctionality(bounds, buildings, areas, lines);
         }
 
-        void GenerateBoundaries(Map map, Transform buildingParent, Transform areaParent)
+        void GenerateBoundaries(List<Way> boundaries, List<Way> buildings, List<Way> areas)
         {
-            foreach (Way boundary in map.Boundaries)
+            foreach (Way boundary in boundaries)
             {
                 XmlNodeList tags = boundary.Node.SelectNodes("tag");
                 if (tags.Count == 0) continue;
@@ -128,7 +125,6 @@ namespace Maps
                 bool isCampus = false;
                 string name = null;
                 float height = 0;
-                Material mat = null;
 
                 foreach (XmlNode tag in tags)
                 {
@@ -185,14 +181,13 @@ namespace Maps
                 if (isBuilding)
                 {
                     if (name == null) name = "building";
-                    if (height == 0) height = 10;
-                    mat = isCampus == true ? campusBuildingMaterial : buildingMaterial;
-                    GameObject go = BuildSolidBoundary(map, boundary, name, height, mat);
-                    go.transform.parent = buildingParent;
+                    if (height == 0) height = 5;
+                    boundary.Name = name;
+                    boundary.Height = height;
+                    buildings.Add(boundary);
                 }
                 else
                 {
-                    mat = null;
                     bool typeFound = false;
                     foreach (XmlNode tag in tags)
                     {
@@ -206,7 +201,6 @@ namespace Maps
                                 {
                                     typeFound = true;
                                     height = 0f;
-                                    mat = waterMaterial;
                                     if (name == null) name = val;
                                     break;
                                 }
@@ -217,7 +211,6 @@ namespace Maps
                                 {
                                     typeFound = true;
                                     height = 0.1f;
-                                    mat = greeneryMaterial;
                                     if (name == null) name = val;
                                     break;
                                 }
@@ -228,7 +221,6 @@ namespace Maps
                                 {
                                     typeFound = true;
                                     height = 0.2f;
-                                    mat = groundMaterial;
                                     if (name == null) name = val;
                                     break;
                                 }
@@ -239,7 +231,6 @@ namespace Maps
                                 {
                                     typeFound = true;
                                     height = 0.3f;
-                                    mat = roadMaterial;
                                     if (name == null) name = val;
                                     break;
                                 }
@@ -248,16 +239,17 @@ namespace Maps
                     }
                     if (typeFound)
                     {
-                        GameObject go = BuildFlatBoundary(map, boundary, name, height, mat);
-                        go.transform.parent = areaParent;
+                        boundary.Name = name;
+                        boundary.Height = height;
+                        areas.Add(boundary);
                     }
                 }
             }
         }
 
-        void GenerateLines(Map map, Transform waysParent)
+        void GenerateLines(List<Way> ways, List<Way> lines)
         {
-            foreach (Way line in map.Lines)
+            foreach (Way line in ways)
             {
                 XmlNodeList tags = line.Node.SelectNodes("tag");
                 if (tags.Count == 0) continue;
@@ -294,82 +286,38 @@ namespace Maps
                 }
                 if (road || water)
                 {
-                    GameObject go = BuildLine(map, line, "line", width, road ? 0.3f : 0f, road ? roadMaterial : waterMaterial);
-                    go.transform.parent = waysParent;
+                    line.Width = width;
+                    line.Height = road ? 0.3f : 0f;
+                    lines.Add(line);
                 }
             }
         }
 
-        GameObject BuildLine(Map map, Way line, string name, float width, float height, Material mat)
+        static List<Node> GetWayNodes(XmlNode node, Dictionary<ulong, Node> nodesDictionary)
         {
-            Vector3 localOrigin = line.GetCenter();
-            GameObject go = PrimeObject(map, line, localOrigin, name, mat);
+            List<Node> nodes = new List<Node>();
 
-            List<Vector3> path = GetLocalVectors(line.Nodes, localOrigin);
-            go.GetComponent<MeshFilter>().mesh = MeshBuilder.MeshFromLine(path, width, height);
-            return go;
-        }
+            XmlNodeList nds = node.SelectNodes("nd");
 
-        GameObject BuildFlatBoundary(Map map, Way boundary, string name, float height, Material mat)
-        {
-            Vector3 localOrigin = boundary.GetCenter();
-            GameObject go = PrimeObject(map, boundary, localOrigin, name, mat);
-
-            List<Vector3> outline = GetLocalVectors(boundary.Nodes, localOrigin);
-
-            go.GetComponent<MeshFilter>().mesh = MeshBuilder.FlatMeshFromOutline(outline, height);
-            return go;
-        }
-
-        GameObject BuildSolidBoundary(Map map, Way boundary, string name, float height, Material mat)
-        {
-            Vector3 localOrigin = boundary.GetCenter();
-            GameObject go = PrimeObject(map, boundary, localOrigin, name, mat);
-
-            List<Vector3> outline = GetLocalVectors(boundary.Nodes, localOrigin);
-
-            go.GetComponent<MeshFilter>().mesh = MeshBuilder.SolidMeshFromOutline(outline, height * buildingHeightMultiplier);
-            return go;
-        }
-
-        GameObject PrimeObject(Map map, Way boundary, Vector3 localOrigin, string name, Material mat)
-        {
-            GameObject go = new GameObject();
-            go.name = name;
-            go.transform.position = localOrigin - map.Bounds.Center;
-
-            MeshRenderer mr = go.AddComponent<MeshRenderer>();
-            MeshFilter mf = go.AddComponent<MeshFilter>();
-            mr.material = mat;
-            return go;
-        }
-
-        List<Vector3> GetLocalVectors(List<Node> nodes, Vector3 localOrigin)
-        {
-            List<Vector3> vectors = new List<Vector3>();
-            foreach (Node node in nodes)
+            foreach (XmlNode n in nds)
             {
-                vectors.Add(node - localOrigin);
+                nodes.Add(nodesDictionary[XmlGetter.GetAttribute<ulong>("ref", n.Attributes)]);
             }
-            return vectors;
+
+            return nodes;
         }
 
-        void primeMaterials()
+        static Dictionary<ulong, Node> GetNodes(XmlNodeList xmlNodeList)
         {
-            buildingMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", building, "Buildings");
-            campusBuildingMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", campusBuilding, "CampusBuildings");
-            greeneryMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", greenery, "Greenery");
-            waterMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", water, "Water");
-            groundMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", ground, "Ground");
-            roadMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", road, "Roads");
-        }
+            Dictionary<ulong, Node> nodes = new Dictionary<ulong, Node>();
 
-        Material CreateMaterial(Shader shader, string colorKey, Color color, string name)
-        {
-            Material material = new Material(shader);
-            material.SetColor(colorKey, color);
-            material.name = name;
-            return material;
+            foreach (XmlNode n in xmlNodeList)
+            {
+                Node node = new Node(n);
+                nodes[node.ID] = node;
+            }
+
+            return nodes;
         }
     }
 }

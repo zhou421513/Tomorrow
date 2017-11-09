@@ -1,0 +1,20 @@
+{
+  "hotspots": [
+    {
+      "id": 32453,
+      "name": "NAME 1",
+      "description": "DESC1",
+      "latitude": 23.532343,
+      "longitude": 212.467,
+      "visited": false
+    },
+    {
+      "id": 123,
+      "name": "NAME 2",
+      "description": "DESC2",
+      "latitude": 23.532343,
+      "longitude": 212.467,
+      "visited": false
+    }
+  ]
+}
