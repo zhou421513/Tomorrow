@@ -7,9 +7,9 @@ namespace Maps{
         float MinLat, MaxLat, MinLon, MaxLon;
         [HideInInspector, SerializeField]
         Vector3 Center;
-        [HideInInspector, SerializeField]
-        public List<Way> Buildings, Areas, Lines;
-
+        [SerializeField]
+        public Way[] Buildings, Areas, Lines;
+        
         public Color building;
         public Color campusBuilding;
         public Color greenery;
@@ -20,45 +20,37 @@ namespace Maps{
         [Range(1, 10)]
         public float buildingHeightMultiplier = 1;
 
-        Material buildingMaterial;
-        Material campusBuildingMaterial;
-        Material greeneryMaterial;
-        Material waterMaterial;
-        Material groundMaterial;
-        Material roadMaterial;
+        Material[] materials;
 
         Transform buildingsHolder;
         Transform areasHolder;
         Transform linesHolder;
-
-        private void Start()
+        
+        private void Awake()
         {
-            if(Buildings == null && Areas == null && Lines == null)
-                Debug.Log("jee");
-            else
-                Debug.Log(Buildings.Count);
+            buildingsHolder = new GameObject("Buildings").transform;
+            buildingsHolder.localScale = transform.localScale;
+            buildingsHolder.parent = transform;
+            areasHolder = new GameObject("Areas").transform;
+            areasHolder.localScale = transform.localScale;
+            areasHolder.parent = transform;
+            linesHolder = new GameObject("Ways").transform;
+            linesHolder.localScale = transform.localScale;
+            linesHolder.parent = transform;
+            primeMaterials();
+            ShowMapArea((MaxLon + MinLon) / 2, (MaxLat + MinLat) / 2, 2000);
         }
-
-        public void SetMapFunctionality(Bounds bounds, List<Way> buildings, List<Way> areas, List<Way> lines)
+        
+        public void SetMapFunctionality(Bounds bounds, Way[] buildings, Way[] areas, Way[] lines)
         {
-            Debug.Log(buildings.Count);
             MinLat = bounds.MinLat;
             MaxLat = bounds.MaxLat;
             MinLon = bounds.MinLon;
             MaxLon = bounds.MaxLon;
             Center = bounds.Center;
             Buildings = buildings;
-            Debug.Log(Buildings.Count);
             Areas = areas;
             Lines = lines;
-            buildingsHolder = new GameObject("Buildings").transform;
-            buildingsHolder.parent = transform;
-            areasHolder = new GameObject("Areas").transform;
-            areasHolder.parent = transform;
-            linesHolder = new GameObject("Ways").transform;
-            linesHolder.parent = transform;
-            primeMaterials();
-            ShowMapArea((MaxLon + MinLon) / 2, (MaxLat + MinLat) / 2, 4000);
         }
 
         public void ShowMapArea(float lon, float lat, float radius)
@@ -104,66 +96,16 @@ namespace Maps{
                 throw new Exception("Position not inside bounds!");
             }
         }
-        /*
-        public void SetMapFunctionality(float minLat, float maxLat, float minLon, float maxLon, Vector3 center)
-        {
-            MinLat = minLat;
-            MaxLat = maxLat;
-            MinLon = minLon;
-            MaxLon = maxLon;
-            Center = center;
-            ShowMapArea((MaxLon + MinLon) / 2, (MaxLat + MinLat) / 2, 4000);
-        }
-
-		public void PlaceOnMap(Transform obj, float lon, float lat)
-		{
-			PlaceAtMap (obj, lon, lat);
-			obj.parent = transform;
-		}
-
-		public void PlaceAtMap(Transform obj, float lon, float lat)
-		{
-            Vector3 position = MapPosition(lon, lat);
-            obj.position = position;
-        }
-
-		public void ShowMapArea(float lon, float lat, float radius)
-		{
-            Vector3 position = MapPosition(lon, lat);
-            foreach (Transform transform in transform.GetComponentsInChildren<Transform>())
-            {
-                if(transform.parent != this.transform && transform != this.transform)
-                {
-                    transform.gameObject.SetActive(Vector3.Distance(transform.localPosition, position) < radius);
-                }
-            }
-        }
-			
-		Vector3 MapPosition(float lon, float lat){
-			bool inLat = lat >= MinLat && lat <= MaxLat;
-			bool inLon = lon >= MinLon && lon <= MaxLon;
-			if (inLat && inLon)
-			{
-				return new Vector3 (
-					(float)MercatorProjection.lonToX (lon),
-					transform.position.y,
-                    (float)MercatorProjection.latToY(lat)
-                ) - Center;
-			} 
-			else {
-				throw new Exception ("Position not inside bounds!");
-			}
-		}
-        */
 
         void primeMaterials()
         {
-            buildingMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", building, "Buildings");
-            campusBuildingMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", campusBuilding, "CampusBuildings");
-            greeneryMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", greenery, "Greenery");
-            waterMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", water, "Water");
-            groundMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", ground, "Ground");
-            roadMaterial = CreateMaterial(Shader.Find("Standard"), "_Color", road, "Roads");
+            materials = new Material[6];
+            materials[0] = CreateMaterial(Shader.Find("Standard"), "_Color", building, "Buildings");
+            materials[1] = CreateMaterial(Shader.Find("Standard"), "_Color", campusBuilding, "CampusBuildings");
+            materials[2] = CreateMaterial(Shader.Find("Standard"), "_Color", greenery, "Greenery");
+            materials[3] = CreateMaterial(Shader.Find("Standard"), "_Color", water, "Water");
+            materials[4] = CreateMaterial(Shader.Find("Standard"), "_Color", ground, "Ground");
+            materials[5] = CreateMaterial(Shader.Find("Standard"), "_Color", road, "Roads");
         }
 
         Material CreateMaterial(Shader shader, string colorKey, Color color, string name)
@@ -177,8 +119,7 @@ namespace Maps{
         void BuildLine(Way line)
         {
             Vector3 localOrigin = line.Center;
-            GameObject go = PrimeObject(line, localOrigin);
-            go.transform.parent = linesHolder;
+            GameObject go = PrimeObject(line, localOrigin, linesHolder);
 
             List<Vector3> path = GetLocalVectors(line.Nodes, localOrigin);
             go.GetComponent<MeshFilter>().mesh = MeshBuilder.MeshFromLine(path, line.Width, line.Height);
@@ -187,8 +128,7 @@ namespace Maps{
         void BuildFlatBoundary(Way area)
         {
             Vector3 localOrigin = area.Center;
-            GameObject go = PrimeObject(area, localOrigin);
-            go.transform.parent = areasHolder;
+            GameObject go = PrimeObject(area, localOrigin, areasHolder);
 
             List<Vector3> outline = GetLocalVectors(area.Nodes, localOrigin);
             go.GetComponent<MeshFilter>().mesh = MeshBuilder.FlatMeshFromOutline(outline, area.Height);
@@ -197,25 +137,28 @@ namespace Maps{
         void BuildSolidBoundary(Way building)
         {
             Vector3 localOrigin = building.Center;
-            GameObject go = PrimeObject(building, localOrigin);
-            go.transform.parent = buildingsHolder;
+            GameObject go = PrimeObject(building, localOrigin, buildingsHolder);
 
             List<Vector3> outline = GetLocalVectors(building.Nodes, localOrigin);
             go.GetComponent<MeshFilter>().mesh = MeshBuilder.SolidMeshFromOutline(outline, building.Height * buildingHeightMultiplier);
         }
 
-        GameObject PrimeObject(Way way, Vector3 localOrigin)
+        GameObject PrimeObject(Way way, Vector3 localOrigin, Transform parent)
         {
             GameObject go = new GameObject(way.Name);
             go.transform.position = localOrigin - Center;
+            go.transform.parent = parent;
+            go.transform.localPosition = go.transform.position;
+            go.transform.localRotation = go.transform.rotation;
+            go.transform.localScale = go.transform.lossyScale;
 
             MeshRenderer mr = go.AddComponent<MeshRenderer>();
             MeshFilter mf = go.AddComponent<MeshFilter>();
-            mr.material = buildingMaterial;
+            mr.material = materials[(int)way.Type];
             return go;
         }
 
-        List<Vector3> GetLocalVectors(List<Node> nodes, Vector3 localOrigin)
+        List<Vector3> GetLocalVectors(Node[] nodes, Vector3 localOrigin)
         {
             List<Vector3> vectors = new List<Vector3>();
             foreach (Node node in nodes)

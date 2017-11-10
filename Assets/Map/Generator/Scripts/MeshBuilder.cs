@@ -106,11 +106,11 @@ namespace Maps
                 Vector3 right;
                 if (i == 0)
                 {
-                    right = Vector3.Cross(line[i] - line[i + 1], Vector3.up).normalized;
+                    right = Vector3.Cross(line[i] - line[i + 1], Vector3.up).normalized + heightVector;
                 }
                 else if (i == line.Count - 1)
                 {
-                    right = Vector3.Cross(line[i - 1] - line[i], Vector3.up).normalized;
+                    right = Vector3.Cross(line[i - 1] - line[i], Vector3.up).normalized + heightVector;
                 }
                 else
                 {

@@ -80,11 +80,11 @@ namespace Maps
 
                 if (nodes[0] == nodes[nodes.Count - 1])
                 {
-                    boundaries.Add(new Way(xmlWay, nodes));
+                    boundaries.Add(new Way(xmlWay, nodes.ToArray()));
                 }
                 else
                 {
-                    ways.Add(new Way(xmlWay, nodes));
+                    ways.Add(new Way(xmlWay, nodes.ToArray()));
                 }
             }
 
@@ -96,7 +96,7 @@ namespace Maps
             GenerateBoundaries(boundaries, buildings, areas);
             GenerateLines(ways, lines);
             GameObject map = new GameObject("Map");
-            map.AddComponent<MapFunctionality>().SetMapFunctionality(bounds, buildings, areas, lines);
+            map.AddComponent<MapFunctionality>().SetMapFunctionality(bounds, buildings.ToArray(), areas.ToArray(), lines.ToArray());
         }
 
         void GenerateBoundaries(List<Way> boundaries, List<Way> buildings, List<Way> areas)
@@ -184,11 +184,13 @@ namespace Maps
                     if (height == 0) height = 5;
                     boundary.Name = name;
                     boundary.Height = height;
+                    boundary.Type = isCampus ? Way.WayType.Campus : Way.WayType.Building;
                     buildings.Add(boundary);
                 }
                 else
                 {
                     bool typeFound = false;
+                    Way.WayType type = Way.WayType.Water;
                     foreach (XmlNode tag in tags)
                     {
                         string key = XmlGetter.GetAttribute<string>("k", tag.Attributes);
@@ -211,6 +213,7 @@ namespace Maps
                                 {
                                     typeFound = true;
                                     height = 0.1f;
+                                    type = Way.WayType.Greenery;
                                     if (name == null) name = val;
                                     break;
                                 }
@@ -221,6 +224,7 @@ namespace Maps
                                 {
                                     typeFound = true;
                                     height = 0.2f;
+                                    type = Way.WayType.Ground;
                                     if (name == null) name = val;
                                     break;
                                 }
@@ -231,6 +235,7 @@ namespace Maps
                                 {
                                     typeFound = true;
                                     height = 0.3f;
+                                    type = Way.WayType.Road;
                                     if (name == null) name = val;
                                     break;
                                 }
@@ -241,6 +246,7 @@ namespace Maps
                     {
                         boundary.Name = name;
                         boundary.Height = height;
+                        boundary.Type = type;
                         areas.Add(boundary);
                     }
                 }
@@ -288,6 +294,7 @@ namespace Maps
                 {
                     line.Width = width;
                     line.Height = road ? 0.3f : 0f;
+                    line.Type = road ? Way.WayType.Road : Way.WayType.Water;
                     lines.Add(line);
                 }
             }

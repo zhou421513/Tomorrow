@@ -4,13 +4,19 @@ using UnityEngine;
 
 namespace Maps
 {
+    [Serializable]
     public class Node
     {
+        [SerializeField]
         public ulong ID { get; private set; }
+        [SerializeField]
         public float Latitude { get; private set; }
+        [SerializeField]
         public float Longitude { get; private set; }
-        public float X { get; private set; }
-        public float Y { get; private set; }
+        [SerializeField]
+        public float X;
+        [SerializeField]
+        public float Y;
 
         public static implicit operator Vector3(Node node)
         {

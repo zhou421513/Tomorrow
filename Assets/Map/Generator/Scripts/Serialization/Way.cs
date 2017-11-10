@@ -5,16 +5,23 @@ using UnityEngine;
 
 namespace Maps
 {
+    [Serializable]
     public class Way : System.Object
     {
-        public XmlNode Node { get; private set; }
-        public List<Node> Nodes { get; private set; }
-        public Vector3 Center { get; private set; }
-        public string Name { get; set; }
-        public float Height { get; set; }
-        public float Width{ get; set; }
 
-        public Way(XmlNode node, List<Node> nodes)
+        public enum WayType { Building, Campus, Greenery, Water, Ground, Road};
+        public XmlNode Node { get; private set; }
+        [SerializeField]
+        public Node[] Nodes;
+        [SerializeField]
+        public Vector3 Center;
+        [SerializeField]
+        public string Name;
+        [SerializeField]
+        public float Height, Width;
+        [SerializeField]
+        public WayType Type;
+        public Way(XmlNode node, Node[] nodes)
         {
             Node = node;
             Nodes = nodes;
@@ -30,7 +37,7 @@ namespace Maps
                 total += node;
             }
 
-            return total / Nodes.Count;
+            return total / Nodes.Length;
         }
     }
 }
