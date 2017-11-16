@@ -1,0 +1,183 @@
+fileFormatVersion: 2
+guid: e24c503bcbf1fb24daebcb6198b687ce
+timeCreated: 1476491911
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Armature
+    100002: Body.001
+    100004: Head.001
+    100006: Head_jnt
+    100008: Head_jnt_end
+    100010: L_elbow_jnt
+    100012: L_elbow_jnt_end
+    100014: L_Shoulder_Jnt
+    100016: LeftArm
+    100018: R_Elbow_jnt
+    100020: R_Elbow_jnt_end
+    100022: R_Shoulder_jnt
+    100024: RightArm
+    100026: Root_jnt
+    100028: Torso_jnt
+    100030: //RootNode
+    400000: Armature
+    400002: Body.001
+    400004: Head.001
+    400006: Head_jnt
+    400008: Head_jnt_end
+    400010: L_elbow_jnt
+    400012: L_elbow_jnt_end
+    400014: L_Shoulder_Jnt
+    400016: LeftArm
+    400018: R_Elbow_jnt
+    400020: R_Elbow_jnt_end
+    400022: R_Shoulder_jnt
+    400024: RightArm
+    400026: Root_jnt
+    400028: Torso_jnt
+    400030: //RootNode
+    4300000: RightArm
+    4300002: LeftArm
+    4300004: Head.001
+    4300006: Body.001
+    7400000: Armature|AnimationCycles
+    7400002: Armature|Walk
+    7400004: Armature|Walk.001
+    7400006: Armature|WalkCycle
+    7400008: Armature|Waving
+    7400010: Armature|Waving.001
+    7400012: Head.001|Walk
+    7400014: Head.001|Walk.001
+    7400016: Head.001|WalkCycle
+    7400018: Head.001|Waving
+    7400020: Waving
+    9500000: //RootNode
+    13700000: Body.001
+    13700002: Head.001
+    13700004: LeftArm
+    13700006: RightArm
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Waving
+      takeName: Armature|AnimationCycles
+      firstFrame: 41
+      lastFrame: 80
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Root_jnt
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/Head_jnt
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/Head_jnt/Head_jnt_end
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/L_Shoulder_Jnt
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/L_Shoulder_Jnt/L_elbow_jnt
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/L_Shoulder_Jnt/L_elbow_jnt/L_elbow_jnt_end
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/R_Shoulder_jnt
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/R_Shoulder_jnt/R_Elbow_jnt
+        weight: 1
+      - path: Armature/Root_jnt/Torso_jnt/R_Shoulder_jnt/R_Elbow_jnt/R_Elbow_jnt_end
+        weight: 1
+      - path: Body.001
+        weight: 1
+      - path: Head.001
+        weight: 1
+      - path: LeftArm
+        weight: 1
+      - path: RightArm
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
