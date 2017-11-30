@@ -8,7 +8,6 @@ public class DataController : GenericSingleton<DataController> {
 
 	public PlayerData player_data;
     public GameObject obj;
-
 	private string jsonString;
 
 	// Calls Load() function
