@@ -53,6 +53,8 @@ public class InputManager : GenericSingleton<InputManager>
 
     void Update()
 	{
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
         if (isEditor)
         {
             EditorInput();
