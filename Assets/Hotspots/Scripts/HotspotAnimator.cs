@@ -11,7 +11,7 @@ public class HotspotAnimator : MonoBehaviour {
     void Start()
     {
         transform.rotation = Quaternion.LookRotation(Vector3.up);
-        transform.position += Vector3.up * .5f;
+        transform.position += Vector3.up * 2f;
     }
 
 	// Update is called once per frame

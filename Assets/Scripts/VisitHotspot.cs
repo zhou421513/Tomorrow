@@ -21,9 +21,19 @@ public class VisitHotspot {
 			}
 		}
 		DataController.Instance.Save();
+        IsGameFinished();
 	}
 
 	private void setProgress () {
 		player_data.progress = (float)player_data.visited_count/player_data.hotspots_count;
 	}
+
+    private void IsGameFinished()
+    {
+        if(DataController.Instance.player_data.hotspots.Length == DataController.Instance.player_data.visited_count && DataController.Instance.player_data.GameCompletionPageShown == false)
+        {
+            DataController.fifthScreen.SetActive(true);
+            DataController.Instance.player_data.GameCompletionPageShown = true;
+        }
+    }
 }

@@ -24,4 +24,8 @@ public class StartScreensController : MonoBehaviour {
         DataController.Instance.Save();
     }
 	
+    public void GetFifthScreen()
+    {
+        DataController.fifthScreen = transform.GetChild(4).gameObject;
+    }
 }

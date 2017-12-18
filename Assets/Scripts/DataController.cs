@@ -8,6 +8,7 @@ public class DataController : GenericSingleton<DataController> {
 
 	public PlayerData player_data;
     public GameObject obj;
+    public static GameObject fifthScreen;
 
 	private string jsonString;
 
@@ -16,6 +17,7 @@ public class DataController : GenericSingleton<DataController> {
 		Load();
         StartScreensController ssc = obj.AddComponent<StartScreensController>();
         ssc.controllFirstScreen();
+        ssc.GetFifthScreen();
 		// Debug.Log("USERNAME: " + player_data.username);
 		// SetUsername setting = new SetUsername();
 		// setting.call("Tomorrow!");
