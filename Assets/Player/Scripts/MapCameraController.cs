@@ -86,7 +86,6 @@ public class MapCameraController : MonoBehaviour
         Vector3 direction = newPos - transform.position;
         playerTransform.rotation = Quaternion.LookRotation(direction, Vector3.up);
         StartCoroutine(MovePlayer(newPos, 2f));
-        UpdateMap();
     }
 
     public void Move(Vector3 direction)
@@ -119,5 +118,6 @@ public class MapCameraController : MonoBehaviour
             yield return null;
         }
         transform.position = target;
+        UpdateMap();
     }
 }

@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4703638213583418}
   - component: {fileID: 114529046664890832}
   - component: {fileID: 114716576243290568}
+  - component: {fileID: 114504826986026358}
   m_Layer: 0
   m_Name: UniversalObject
   m_TagString: Untagged
@@ -41,6 +42,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114504826986026358
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1662835702763824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9609164e504c1f4db71d447eab4c56b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screens:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &114529046664890832
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -61,6 +81,7 @@ MonoBehaviour:
     player_character: 
     progress: 0
     registrationCompleted: 0
+    GameCompletionPageShown: 0
   obj: {fileID: 0}
 --- !u!114 &114716576243290568
 MonoBehaviour:

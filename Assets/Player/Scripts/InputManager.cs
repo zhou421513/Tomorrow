@@ -9,6 +9,7 @@ public class InputManager : GenericSingleton<InputManager>
 	public event Action<float> rotate;
     public event Action<float, float> locationChanged;
     public event Action<Vector3> move;
+    public event Action back;
     public bool isEditor = false;
 
     float longitude, latitude;
@@ -54,7 +55,7 @@ public class InputManager : GenericSingleton<InputManager>
     void Update()
 	{
         if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+            back();
         if (isEditor)
         {
             EditorInput();
